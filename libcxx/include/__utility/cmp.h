@@ -43,10 +43,8 @@ concept __is_safe_integral_cmp = is_integral_v<_Tp> &&
 #endif
                                     >::value;
 
-template<__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
-_LIBCPP_INLINE_VISIBILITY constexpr
-bool cmp_equal(_Tp __t, _Up __u) noexcept
-{
+template <__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
+_LIBCPP_HIDE_FROM_ABI constexpr bool cmp_equal(_Tp __t, _Up __u) noexcept {
   if constexpr (is_signed_v<_Tp> == is_signed_v<_Up>)
     return __t == __u;
   else if constexpr (is_signed_v<_Tp>)
@@ -55,18 +53,16 @@ bool cmp_equal(_Tp __t, _Up __u) noexcept
     return __u < 0 ? false : __t == make_unsigned_t<_Up>(__u);
 }
 
-template<__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
-_LIBCPP_INLINE_VISIBILITY constexpr
-bool cmp_not_equal(_Tp __t, _Up __u) noexcept
-{
+template <__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
+_LIBCPP_HIDE_FROM_ABI constexpr bool cmp_not_equal(_Tp __t, _Up __u) noexcept {
   return !_VSTD::cmp_equal(__t, __u);
 }
 
-template<__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
-_LIBCPP_INLINE_VISIBILITY constexpr
-bool cmp_less(_Tp __t, _Up __u) noexcept
-{
-  if constexpr (is_signed_v<_Tp> == is_signed_v<_Up>)
+template <__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
+_LIBCPP_HIDE_FROM_ABI constexpr bool cmp_less(_Tp __t, _Up __u) noexcept {
+  if constexpr (sizeof(_Tp) < sizeof(long long) && sizeof(_Up) < sizeof(long long))
+    return static_cast<long long>(__t) < static_cast<long long>(__u);
+  else if constexpr (is_signed_v<_Tp> == is_signed_v<_Up>)
     return __t < __u;
   else if constexpr (is_signed_v<_Tp>)
     return __t < 0 ? true : make_unsigned_t<_Tp>(__t) < __u;
@@ -74,31 +70,23 @@ bool cmp_less(_Tp __t, _Up __u) noexcept
     return __u < 0 ? false : __t < make_unsigned_t<_Up>(__u);
 }
 
-template<__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
-_LIBCPP_INLINE_VISIBILITY constexpr
-bool cmp_greater(_Tp __t, _Up __u) noexcept
-{
+template <__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
+_LIBCPP_HIDE_FROM_ABI constexpr bool cmp_greater(_Tp __t, _Up __u) noexcept {
   return _VSTD::cmp_less(__u, __t);
 }
 
-template<__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
-_LIBCPP_INLINE_VISIBILITY constexpr
-bool cmp_less_equal(_Tp __t, _Up __u) noexcept
-{
+template <__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
+_LIBCPP_HIDE_FROM_ABI constexpr bool cmp_less_equal(_Tp __t, _Up __u) noexcept {
   return !_VSTD::cmp_greater(__t, __u);
 }
 
-template<__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
-_LIBCPP_INLINE_VISIBILITY constexpr
-bool cmp_greater_equal(_Tp __t, _Up __u) noexcept
-{
+template <__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
+_LIBCPP_HIDE_FROM_ABI constexpr bool cmp_greater_equal(_Tp __t, _Up __u) noexcept {
   return !_VSTD::cmp_less(__t, __u);
 }
 
-template<__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
-_LIBCPP_INLINE_VISIBILITY constexpr
-bool in_range(_Up __u) noexcept
-{
+template <__is_safe_integral_cmp _Tp, __is_safe_integral_cmp _Up>
+_LIBCPP_HIDE_FROM_ABI constexpr bool in_range(_Up __u) noexcept {
   return _VSTD::cmp_less_equal(__u, numeric_limits<_Tp>::max()) &&
          _VSTD::cmp_greater_equal(__u, numeric_limits<_Tp>::min());
 }
